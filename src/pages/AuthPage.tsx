@@ -17,6 +17,7 @@ const AuthPage = () => {
         </div>
         <div className="bg-white p-8 rounded-2xl shadow-lg">
           {isLogin ? <Login setIsLogin={setIsLogin} /> : <SignUp setIsLogin={setIsLogin} />}
+          
         </div>
       </div>
     </div>
