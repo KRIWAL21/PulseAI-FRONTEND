@@ -1,12 +1,24 @@
-import React from 'react';
-interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
-const AuthInput: React.FC<AuthInputProps> = (props) => (
-  <div>
-    <label htmlFor={props.id} className="block text-sm font-medium text-gray-700 mb-1">{props.placeholder}</label>
+import type { InputHTMLAttributes } from 'react';
+
+interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
+  icon?: string;
+}
+
+const AuthInput = ({ icon, className = '', ...rest }: AuthInputProps) => (
+  <div
+    className="focus-ring flex items-center gap-3 rounded-xl px-4 py-3 transition-all"
+    style={{
+      background: 'var(--bg-input)',
+      border: '1px solid var(--border)',
+    }}
+  >
+    {icon && <span className="text-lg flex-shrink-0 opacity-60">{icon}</span>}
     <input
-      {...props}
-      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+      className={`flex-1 bg-transparent text-sm outline-none ${className}`}
+      style={{ color: 'var(--text-primary)' }}
+      {...rest}
     />
   </div>
 );
+
 export default AuthInput;

@@ -1,49 +1,78 @@
-// =================================================================
-// FILE: src/App.tsx (Final Version)
-// =================================================================
-// This is the complete, final version with routing and auth logic.
+/**
+ * App.tsx — Application root
+ *
+ * PROVIDER HIERARCHY (outermost first):
+ * 1. ErrorBoundary    → Catches any React crash tree-wide
+ * 2. ToastProvider    → Global notification system available everywhere
+ * 3. AuthProvider     → Firebase auth state
+ * 4. ChatProvider     → Chat state (depends on AuthProvider for user.uid)
+ * 5. Router + Routes  → Page routing
+ *
+ * WHY THIS ORDER?
+ * - ChatProvider uses useAuth(), so AuthProvider must wrap it
+ * - ToastProvider must wrap everything so any component can call useToast()
+ * - ErrorBoundary wraps everything so it can catch errors from any provider
+ */
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import AuthPage from './pages/AuthPage';
 import DashboardPage from './pages/DashBoardPage';
 import Spinner from './components/common/Spinner';
+import Toast from './components/common/Toast';
 
-function App() {
-  const { user, loading } = useAuth();
+function AppRoutes() {
+  const { user, isLoading } = useAuth();
 
-  // Show a loading spinner while Firebase checks the auth state
-  if (loading) {
+  // Wait until auth is resolved before routing to avoid flicker
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <Spinner />
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh',
+          gap: '1rem',
+          background: 'var(--bg-base)',
+        }}
+      >
+        <Spinner size={36} />
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+          Loading PulseAI...
+        </p>
       </div>
     );
   }
 
   return (
-    <Router>
+    <>
+      {/* Toast overlay — rendered at app root so it appears above everything */}
+      <Toast />
+
       <Routes>
-        {/* If the user is not logged in, show the AuthPage. Otherwise, redirect to the dashboard. */}
-        <Route 
-          path="/auth" 
-          element={!user ? <AuthPage /> : <Navigate to="/dashboard" />} 
+        <Route
+          path="/auth"
+          element={!user ? <AuthPage /> : <Navigate to="/dashboard" replace />}
         />
-        
-        {/* If the user is logged in, show the DashboardPage. Otherwise, redirect to the auth page. */}
-        <Route 
-          path="/dashboard" 
-          element={user ? <DashboardPage /> : <Navigate to="/auth" />} 
+        <Route
+          path="/dashboard"
+          element={user ? <DashboardPage /> : <Navigate to="/auth" replace />}
         />
-        
-        {/* Any other path will redirect to the correct page based on auth state. */}
-        <Route 
-          path="*" 
-          element={<Navigate to={user ? "/dashboard" : "/auth"} />} 
+        <Route
+          path="*"
+          element={<Navigate to={user ? '/dashboard' : '/auth'} replace />}
         />
       </Routes>
-    </Router>
+    </>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <Router>
+      <AppRoutes />
+    </Router>
+  );
+}

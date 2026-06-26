@@ -1,11 +1,18 @@
-import React from 'react';
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
-const Button: React.FC<ButtonProps> = ({ children, className, ...props }) => (
+import type { ButtonHTMLAttributes, ReactNode } from 'react';
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+  variant?: 'accent' | 'ghost';
+  fullWidth?: boolean;
+}
+
+const Button = ({ children, variant = 'accent', fullWidth = true, className = '', ...rest }: ButtonProps) => (
   <button
-    {...props}
-    className={`w-full text-white font-bold py-3 px-4 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 transition-opacity disabled:from-gray-400 disabled:to-gray-500 ${className}`}
+    className={`btn-${variant} px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${fullWidth ? 'w-full' : ''} ${className}`}
+    {...rest}
   >
     {children}
   </button>
 );
+
 export default Button;

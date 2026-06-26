@@ -1,1 +1,356 @@
 @import "tailwindcss";
+
+/* =============================================================================
+   PULSEAI DESIGN SYSTEM
+   Dark Medical Tech Theme — Navy + Cyan
+   =============================================================================
+   
+   HOW THIS WORKS:
+   - CSS Custom Properties (--color-*) define our design tokens
+   - These tokens are used both in CSS classes below AND can be referenced
+     in inline styles from React components
+   - Tailwind utility classes handle layout/spacing, custom CSS handles 
+     visual effects (glassmorphism, gradients, animations)
+   ============================================================================= */
+
+@layer base {
+  :root {
+    /* ── Background Hierarchy ─────────────────────────────────── */
+    --bg-base:     #060b18;   /* Darkest — main page background */
+    --bg-elevated: #0d1626;   /* Sidebar, panels */
+    --bg-overlay:  #111d33;   /* Cards, bot messages */
+    --bg-hover:    #162138;   /* Hover states */
+    --bg-input:    #0a1525;   /* Input fields */
+
+    /* ── Borders ─────────────────────────────────────────────── */
+    --border:        #1e3a5f;
+    --border-subtle: #0f2040;
+    --border-focus:  #00d4ff;
+
+    /* ── Accent Palette ──────────────────────────────────────── */
+    --accent:        #00d4ff;
+    --accent-dim:    rgba(0, 212, 255, 0.12);
+    --accent-blue:   #3b82f6;
+    --accent-purple: #8b5cf6;
+    --accent-green:  #10b981;
+
+    /* ── Typography ──────────────────────────────────────────── */
+    --text-primary:   #e2e8f0;
+    --text-secondary: #94a3b8;
+    --text-muted:     #475569;
+
+    /* ── Status Colors ───────────────────────────────────────── */
+    --success: #10b981;
+    --error:   #ef4444;
+    --warning: #f59e0b;
+
+    /* ── Gradients ───────────────────────────────────────────── */
+    --gradient-accent:    linear-gradient(135deg, #00d4ff, #3b82f6);
+    --gradient-logo:      linear-gradient(135deg, #06b6d4, #3b82f6, #8b5cf6);
+    --gradient-user-msg:  linear-gradient(135deg, #1d4ed8 0%, #7c3aed 100%);
+    --gradient-hero:      radial-gradient(ellipse at 50% 0%, rgba(0, 212, 255, 0.08) 0%, transparent 60%);
+
+    /* ── Shadows ─────────────────────────────────────────────── */
+    --shadow-glow:     0 0 24px rgba(0, 212, 255, 0.18);
+    --shadow-glow-sm:  0 0 10px rgba(0, 212, 255, 0.12);
+    --shadow-card:     0 4px 24px rgba(0, 0, 0, 0.4);
+    --shadow-elevated: 0 8px 40px rgba(0, 0, 0, 0.6);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden; /* prevent body scroll; panels scroll internally */
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg-elevated); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
+}
+
+/* =============================================================================
+   ANIMATIONS
+   ============================================================================= */
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 8px rgba(0, 212, 255, 0.4); }
+  50%       { box-shadow: 0 0 22px rgba(0, 212, 255, 0.9), 0 0 40px rgba(0, 212, 255, 0.3); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30%            { transform: translateY(-7px); opacity: 1; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(110%) scale(0.95); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(0) scale(1); }
+  to   { opacity: 0; transform: translateX(110%) scale(0.95); }
+}
+
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* =============================================================================
+   COMPONENT CLASSES
+   ============================================================================= */
+
+/* Glass Morphism Card */
+.glass {
+  background: rgba(13, 22, 38, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+}
+
+.glass-light {
+  background: rgba(17, 29, 51, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(30, 58, 95, 0.5);
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Accent Button */
+.btn-accent {
+  background: var(--gradient-accent);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+.btn-accent:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-glow);
+}
+.btn-accent:active:not(:disabled) { transform: translateY(0); }
+.btn-accent:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Ghost Button */
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.btn-ghost:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--border-focus); }
+
+/* Spinner */
+.spinner {
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+/* Focus Ring */
+.focus-ring:focus-within {
+  outline: none;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+/* Message animations */
+.msg-enter { animation: fadeSlideUp 0.3s ease-out forwards; }
+
+/* Typing indicator dots */
+.typing-dot {
+  width: 7px; height: 7px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  animation: typingBounce 1.3s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.18s; background: var(--text-secondary); }
+.typing-dot:nth-child(3) { animation-delay: 0.36s; background: var(--accent); }
+
+/* Streaming cursor */
+.streaming-cursor::after {
+  content: '▋';
+  color: var(--accent);
+  animation: cursorBlink 0.8s step-end infinite;
+  margin-left: 1px;
+}
+
+/* Bot avatar pulse while streaming */
+.avatar-pulse { animation: pulseGlow 1.8s ease-in-out infinite; }
+
+/* Sidebar conversation item active */
+.conv-item-active {
+  background: var(--accent-dim);
+  border-color: rgba(0, 212, 255, 0.25) !important;
+  color: var(--accent) !important;
+}
+
+/* Toast animations */
+.toast-enter { animation: toastIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.toast-exit  { animation: toastOut 0.25s ease-in forwards; }
+
+/* Shimmer (skeleton loading) */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-elevated) 25%,
+    var(--bg-hover) 50%,
+    var(--bg-elevated) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Source accordion */
+.source-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  background: var(--accent-dim);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  color: var(--accent);
+  cursor: default;
+  transition: background 0.2s;
+}
+.source-chip:hover { background: rgba(0, 212, 255, 0.2); }
+
+/* =============================================================================
+   MARKDOWN RENDERING (inside bot messages)
+   ============================================================================= */
+
+.md h1, .md h2, .md h3 {
+  color: var(--text-primary);
+  font-weight: 600;
+  margin: 1em 0 0.4em;
+  line-height: 1.3;
+}
+.md h2 {
+  font-size: 1.05em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.md h3 { font-size: 0.97em; color: var(--accent); }
+
+.md p { margin: 0.5em 0; color: var(--text-primary); line-height: 1.75; }
+
+.md ul, .md ol { padding-left: 1.4em; margin: 0.4em 0; }
+.md li { margin: 0.3em 0; color: var(--text-secondary); line-height: 1.6; }
+.md li::marker { color: var(--accent); }
+
+.md strong { color: var(--text-primary); font-weight: 600; }
+.md em     { color: var(--accent); font-style: italic; }
+
+.md code {
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+  font-size: 0.82em;
+  font-family: 'Fira Code', 'Monaco', 'Cascadia Code', monospace;
+  color: var(--accent);
+}
+
+.md blockquote {
+  border-left: 3px solid var(--accent);
+  margin: 0.75em 0;
+  padding: 0.5em 1em;
+  background: rgba(0, 212, 255, 0.05);
+  border-radius: 0 8px 8px 0;
+  color: var(--text-secondary);
+}
+
+.md hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1em 0;
+}
+
+.md a { color: var(--accent-blue); text-decoration: underline; }
+
+/* =============================================================================
+   AUTH PAGE — Animated Background
+   ============================================================================= */
+
+.auth-bg {
+  background: var(--bg-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0, 212, 255, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Heartbeat line (decorative) */
+.pulse-line {
+  stroke: var(--accent);
+  stroke-width: 2;
+  fill: none;
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: drawLine 1.5s ease forwards;
+}
+@keyframes drawLine {
+  to { stroke-dashoffset: 0; }
+}

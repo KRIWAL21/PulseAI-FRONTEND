@@ -1,27 +1,26 @@
 import { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../services/firebase';
+import { useAuth } from '../../hooks/useAuth';
 import AuthInput from '../common/AuthInput';
 import Button from '../common/Button';
 
 interface LoginProps {
-  setIsLogin: (isLogin: boolean) => void;
+  setIsLogin: (v: boolean) => void;
 }
 
 const Login: React.FC<LoginProps> = ({ setIsLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { signIn } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (err: any) {
-      setError(err.message);
+      await signIn(email, password);
+      // Successful login → AuthContext updates → App redirects to /dashboard
+    } catch (err) {
+      // Error is handled by signIn (shows toast)
     } finally {
       setLoading(false);
     }
@@ -29,16 +28,53 @@ const Login: React.FC<LoginProps> = ({ setIsLogin }) => {
 
   return (
     <>
-      <div className="flex border-b mb-6">
-        <button className="flex-1 py-2 font-semibold text-indigo-600 border-b-2 border-indigo-600">Login</button>
-        <button onClick={() => setIsLogin(false)} className="flex-1 py-2 font-semibold text-gray-500">Register</button>
+      {/* Tab switcher */}
+      <div className="flex mb-6" style={{ borderBottom: '1px solid var(--border)' }}>
+        <button
+          className="flex-1 pb-3 text-sm font-semibold transition-colors"
+          style={{ color: 'var(--accent)', borderBottom: '2px solid var(--accent)' }}
+        >
+          Sign In
+        </button>
+        <button
+          onClick={() => setIsLogin(false)}
+          className="flex-1 pb-3 text-sm font-medium transition-colors"
+          style={{ color: 'var(--text-muted)' }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-secondary)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
+        >
+          Register
+        </button>
       </div>
-      {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
+
       <form onSubmit={handleLogin} className="space-y-4">
-        <AuthInput id="login-email" type="email" placeholder="Email Address" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <AuthInput id="login-password" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <AuthInput
+          id="login-email"
+          type="email"
+          placeholder="Email address"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          icon="✉️"
+          required
+          autoComplete="email"
+        />
+        <AuthInput
+          id="login-password"
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          icon="🔒"
+          required
+          autoComplete="current-password"
+        />
         <Button type="submit" disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <span className="spinner" style={{ width: 16, height: 16 }} />
+              Signing in...
+            </span>
+          ) : 'Sign In →'}
         </Button>
       </form>
     </>
