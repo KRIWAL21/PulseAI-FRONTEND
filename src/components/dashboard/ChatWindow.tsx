@@ -50,6 +50,16 @@ const ChatWindow = () => {
 
   const isSubmittingRef = useRef(false);
 
+  const handleSendText = async (text: string) => {
+    if (!text.trim() || !selectedConversationId || isStreaming || isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+    try {
+      await sendMessage(text);
+    } finally {
+      isSubmittingRef.current = false;
+    }
+  };
+
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || !selectedConversationId || isStreaming || isSubmittingRef.current) return;
@@ -132,6 +142,40 @@ const ChatWindow = () => {
           <div className="flex items-center justify-center h-full gap-3" style={{ color: 'var(--text-muted)' }}>
             <Spinner size={20} />
             <span className="text-sm">Loading messages...</span>
+          </div>
+        ) : messages.length === 0 && streamingMessage === null ? (
+          <div className="h-full flex flex-col items-center justify-center max-w-xl mx-auto my-auto p-4 sm:p-8">
+            <div className="text-center mb-6">
+              <span className="text-3xl mb-2 block">💡</span>
+              <h3 className="text-base font-bold mb-1" style={{ color: 'var(--text-primary)' }}>Start this conversation</h3>
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Click a suggested question below or type your own</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full">
+              {[
+                { icon: '💊', text: 'What are common side effects of Aspirin?' },
+                { icon: '🩺', text: 'Explain the symptoms of Type 2 diabetes' },
+                { icon: '🫁', text: 'How does the respiratory system work?' },
+                { icon: '❤️', text: 'What causes high blood pressure?' }
+              ].map((s, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleSendText(s.text)}
+                  className="text-left p-3.5 rounded-xl border transition-all flex items-start gap-3 group"
+                  style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)' }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = 'rgba(0,212,255,0.3)';
+                    e.currentTarget.style.background = 'var(--bg-overlay)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = 'var(--border)';
+                    e.currentTarget.style.background = 'var(--bg-elevated)';
+                  }}
+                >
+                  <span className="text-lg">{s.icon}</span>
+                  <span className="text-xs font-medium leading-snug pt-0.5" style={{ color: 'var(--text-secondary)' }}>{s.text}</span>
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
           <>
