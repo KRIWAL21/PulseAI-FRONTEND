@@ -1,8 +1,16 @@
 // src/hooks/useSpeech.ts
 import { useState, useEffect, useRef } from 'react';
 
+// Declare types for Web Speech API to satisfy TypeScript
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
+
 // This is for browsers that might have a prefixed version of the API
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const SpeechRecognition = typeof window !== 'undefined' ? (window.SpeechRecognition || window.webkitSpeechRecognition) : null;
 const recognition = SpeechRecognition ? new SpeechRecognition() : null;
 
 if (recognition) {
@@ -14,12 +22,12 @@ if (recognition) {
 export const useSpeech = () => {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<any>(null);
 
   useEffect(() => {
     if (!recognition) return;
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onresult = (event: any) => {
       let finalTranscript = '';
       for (let i = 0; i < event.results.length; i++) {
         if (event.results[i].isFinal) {
@@ -35,14 +43,14 @@ export const useSpeech = () => {
       }, 1500); // Stop listening 1.5s after user stops talking
     };
 
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+    recognition.onerror = (event: any) => {
       console.error("Speech recognition error:", event.error);
       setIsListening(false);
     };
     
     recognition.onend = () => {
-        setIsListening(false);
-    }
+      setIsListening(false);
+    };
 
   }, []);
 
@@ -62,7 +70,7 @@ export const useSpeech = () => {
   };
 
   const speak = (text: string) => {
-    if ('speechSynthesis' in window) {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       window.speechSynthesis.speak(utterance);
     } else {
