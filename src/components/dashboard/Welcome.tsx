@@ -1,7 +1,7 @@
 import { useChat } from '../../hooks/useChat';
 
 const Welcome = () => {
-  const { createNewConversation, sendMessage } = useChat();
+  const { createNewConversation, sendMessage, selectedConversationId } = useChat();
 
   const suggestions = [
     { icon: '💊', text: 'What are common side effects of Aspirin?', category: 'Medications' },
@@ -13,8 +13,12 @@ const Welcome = () => {
   ];
 
   const handleSuggestion = async (text: string) => {
-    const conversation = await createNewConversation();
-    await sendMessage(text, conversation.id);
+    if (selectedConversationId) {
+      await sendMessage(text, selectedConversationId);
+    } else {
+      const conversation = await createNewConversation();
+      await sendMessage(text, conversation.id);
+    }
   };
 
   return (
