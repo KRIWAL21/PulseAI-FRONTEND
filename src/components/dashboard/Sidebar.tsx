@@ -79,14 +79,15 @@ const Sidebar = ({ isMobileOpen, onMobileClose }: SidebarProps) => {
         style={{ borderBottom: '1px solid var(--border)' }}
       >
         <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+          className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-white font-bold text-lg"
           style={{ background: 'var(--gradient-accent)', boxShadow: 'var(--shadow-glow-sm)' }}
         >
-          <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none">
-            <path d="M3 12H5.5L8 4L12.5 20L16.5 9L19 12H21" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          ✚
         </div>
-        <span className="font-bold text-base gradient-text">PulseAI</span>
+        <div>
+          <span className="font-bold text-base gradient-text block leading-none mb-1">PulseAI Clinical</span>
+          <span className="text-[10px] tracking-wider uppercase text-emerald-400 font-bold flex items-center gap-1">● VERIFIED RAG</span>
+        </div>
       </div>
 
       {/* ── New Chat Button ───────────────────────────────────── */}

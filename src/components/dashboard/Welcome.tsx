@@ -28,33 +28,43 @@ const Welcome = () => {
       <div className="text-center mb-10" style={{ animation: 'fadeSlideUp 0.5s ease-out' }}>
         {/* Animated logo */}
         <div
-          className="w-20 h-20 rounded-2xl mx-auto mb-5 flex items-center justify-center avatar-pulse"
+          className="w-20 h-20 rounded-3xl mx-auto mb-5 flex items-center justify-center avatar-pulse text-white font-extrabold text-4xl border border-cyan-400/30"
           style={{ background: 'var(--gradient-accent)', boxShadow: 'var(--shadow-glow)' }}
         >
-          <svg className="w-11 h-11 text-white" viewBox="0 0 24 24" fill="none">
-            <path d="M3 12H5.5L8 4L12.5 20L16.5 9L19 12H21" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          🩺
         </div>
 
-        <h2 className="text-3xl font-bold mb-2 gradient-text">How can I help you today?</h2>
-        <p className="text-sm max-w-md" style={{ color: 'var(--text-secondary)' }}>
-          Ask me anything about medicine, symptoms, medications, or anatomy.
-          I'll answer from verified medical documents with source citations.
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold mb-3 tracking-wide uppercase">
+          <span>● Verified Clinical RAG Active</span>
+        </div>
+
+        <h2 className="text-3xl sm:text-4xl font-extrabold mb-3 text-white tracking-tight">
+          Hello, I am <span className="gradient-text">Dr. Pulse AI</span>
+        </h2>
+        <p className="text-sm max-w-lg mx-auto leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+          Your autonomous clinical medical consultant powered by DeepMind Gemini 2.5. 
+          Every response is grounded in clinical literature and verified diagnostic databases.
         </p>
 
         {/* Capabilities pills */}
-        <div className="flex flex-wrap justify-center gap-2 mt-5">
-          {['RAG-Powered', 'Source Citations', 'Voice Input', 'Conversational Memory'].map(cap => (
+        <div className="flex flex-wrap justify-center gap-2.5 mt-6">
+          {[
+            { label: 'Clinical Literature Grounding', icon: '📚' },
+            { label: 'Diagnostic Source Citations', icon: '✚' },
+            { label: 'Real-time Audio Symptom Input', icon: '🎙️' },
+            { label: 'Encrypted Patient Memory', icon: '🛡️' }
+          ].map(cap => (
             <span
-              key={cap}
-              className="px-3 py-1 rounded-full text-xs font-medium"
+              key={cap.label}
+              className="px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
               style={{
-                background: 'var(--accent-dim)',
-                border: '1px solid rgba(0,212,255,0.2)',
-                color: 'var(--accent)',
+                background: 'rgba(13, 148, 136, 0.15)',
+                border: '1px solid rgba(20, 184, 166, 0.3)',
+                color: '#2dd4bf',
               }}
             >
-              ✦ {cap}
+              <span>{cap.icon}</span>
+              <span>{cap.label}</span>
             </span>
           ))}
         </div>
@@ -62,41 +72,44 @@ const Welcome = () => {
 
       {/* Suggestion cards */}
       <div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full max-w-3xl"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 w-full max-w-4xl"
         style={{ animation: 'fadeSlideUp 0.6s ease-out 0.1s both' }}
       >
         {suggestions.map((s, i) => (
           <button
             key={i}
             onClick={() => handleSuggestion(s.text)}
-            className="text-left p-4 rounded-2xl transition-all group"
+            className="text-left p-4 rounded-2xl transition-all relative overflow-hidden group"
             style={{
-              background: 'var(--bg-elevated)',
-              border: '1px solid var(--border)',
+              background: 'linear-gradient(180deg, rgba(13, 22, 38, 0.7) 0%, rgba(9, 19, 34, 0.9) 100%)',
+              border: '1px solid rgba(30, 58, 95, 0.7)',
               animationDelay: `${i * 0.05}s`,
             }}
             onMouseEnter={e => {
               const el = e.currentTarget;
-              el.style.borderColor = 'rgba(0,212,255,0.3)';
-              el.style.background = 'var(--bg-overlay)';
-              el.style.transform = 'translateY(-2px)';
-              el.style.boxShadow = 'var(--shadow-glow-sm)';
+              el.style.borderColor = '#2dd4bf';
+              el.style.background = 'rgba(13, 148, 136, 0.12)';
+              el.style.transform = 'translateY(-3px)';
+              el.style.boxShadow = '0 10px 25px -5px rgba(13, 148, 136, 0.25)';
             }}
             onMouseLeave={e => {
               const el = e.currentTarget;
-              el.style.borderColor = 'var(--border)';
-              el.style.background = 'var(--bg-elevated)';
+              el.style.borderColor = 'rgba(30, 58, 95, 0.7)';
+              el.style.background = 'linear-gradient(180deg, rgba(13, 22, 38, 0.7) 0%, rgba(9, 19, 34, 0.9) 100%)';
               el.style.transform = 'none';
               el.style.boxShadow = 'none';
             }}
           >
-            <div className="flex items-start gap-3">
-              <span className="text-2xl">{s.icon}</span>
+            <div className="absolute top-2 right-2 opacity-5 font-black text-4xl select-none pointer-events-none text-teal-400">
+              ✚
+            </div>
+            <div className="flex items-start gap-3.5 relative z-10">
+              <span className="text-2xl p-2 rounded-xl bg-teal-500/10 border border-teal-500/20 block">{s.icon}</span>
               <div>
-                <p className="text-xs font-semibold mb-1" style={{ color: 'var(--accent)' }}>
+                <span className="text-[10px] font-bold tracking-widest uppercase block mb-1 text-teal-400">
                   {s.category}
-                </p>
-                <p className="text-sm leading-snug" style={{ color: 'var(--text-secondary)' }}>
+                </span>
+                <p className="text-xs sm:text-sm font-medium leading-snug text-gray-200 group-hover:text-white transition-colors">
                   {s.text}
                 </p>
               </div>

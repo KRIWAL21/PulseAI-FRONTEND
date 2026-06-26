@@ -230,7 +230,7 @@ const ChatWindow = () => {
                 e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
               }}
               onKeyDown={handleKeyDown}
-              placeholder={isListening ? '🎤 Listening...' : 'Ask a medical question... (Enter to send, Shift+Enter for newline)'}
+              placeholder={isListening ? '🎙️ Recording clinical audio...' : 'Describe symptoms, paste lab results, or inquire about medications...'}
               disabled={isStreaming}
               className="flex-1 bg-transparent text-sm resize-none outline-none leading-relaxed disabled:opacity-50"
               style={{

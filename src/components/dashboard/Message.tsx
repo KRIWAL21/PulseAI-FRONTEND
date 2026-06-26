@@ -19,7 +19,6 @@
 import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { useAuth } from '../../hooks/useAuth';
 import type { Message as MessageType } from '../../context/ChatContext';
 
 interface MessageProps {
@@ -96,7 +95,6 @@ const Message: React.FC<MessageProps> = ({
   isStreaming = false,
   onSpeak,
 }) => {
-  const { user } = useAuth();
   const isUser = message.sender === 'user';
 
   return (
@@ -108,40 +106,50 @@ const Message: React.FC<MessageProps> = ({
       <div
         className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold ${isStreaming && !isUser ? 'avatar-pulse' : ''}`}
         style={{
-          background: isUser ? 'rgba(139, 92, 246, 0.3)' : 'var(--gradient-accent)',
-          border: `2px solid ${isUser ? 'rgba(139,92,246,0.4)' : 'rgba(0,212,255,0.3)'}`,
+          background: isUser ? 'rgba(13, 148, 136, 0.25)' : 'var(--gradient-accent)',
+          border: `2px solid ${isUser ? 'rgba(20, 184, 166, 0.4)' : 'rgba(6, 182, 212, 0.4)'}`,
           boxShadow: !isUser ? 'var(--shadow-glow-sm)' : 'none',
           color: 'white',
         }}
       >
-        {isUser
-          ? (user?.email?.charAt(0).toUpperCase() ?? 'U')
-          : (
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-              <path d="M3 12H5.5L8 4L12.5 20L16.5 9L19 12H21" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          )
-        }
+        {isUser ? '👤' : '🩺'}
       </div>
 
       {/* Bubble */}
       <div
-        className="rounded-2xl px-4 py-3 text-sm"
+        className="rounded-2xl px-4.5 py-3.5 text-sm transition-all relative overflow-hidden"
         style={{
-          background: isUser ? 'var(--gradient-user-msg)' : 'var(--bg-overlay)',
-          border: isUser ? 'none' : '1px solid var(--border)',
+          background: isUser ? 'var(--gradient-user-msg)' : 'linear-gradient(180deg, rgba(13, 28, 48, 0.8) 0%, rgba(9, 19, 34, 0.95) 100%)',
+          border: isUser ? '1px solid rgba(20, 184, 166, 0.3)' : '1px solid rgba(30, 58, 95, 0.8)',
           color: isUser ? '#fff' : 'var(--text-primary)',
-          borderRadius: isUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+          borderRadius: isUser ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
           maxWidth: '100%',
           wordBreak: 'break-word',
+          boxShadow: '0 4px 20px -2px rgba(0,0,0,0.3)'
         }}
       >
+        {!isUser && !isTyping && (
+          <div className="flex items-center gap-2 pb-2.5 mb-3 border-b border-white/[0.06] select-none">
+            <span className="text-teal-400 font-black text-xs">✚</span>
+            <span className="text-[10px] font-bold tracking-widest text-teal-300 uppercase">Clinical AI Consultation</span>
+            <span className="ml-auto text-[9px] font-extrabold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
+              Verified RAG
+            </span>
+          </div>
+        )}
+
+        {isUser && !isTyping && (
+          <div className="flex items-center gap-1.5 pb-1.5 mb-2 border-b border-white/10 select-none text-[9px] font-bold tracking-widest uppercase text-teal-200 opacity-80">
+            <span>Patient Inquiry</span>
+          </div>
+        )}
+
         {/* Typing indicator */}
         {isTyping && (
-          <div className="flex items-center gap-1.5 py-0.5">
-            <span className="typing-dot" />
-            <span className="typing-dot" />
-            <span className="typing-dot" />
+          <div className="flex items-center gap-1.5 py-1 px-1">
+            <span className="typing-dot bg-teal-400" />
+            <span className="typing-dot bg-cyan-400" />
+            <span className="typing-dot bg-emerald-400" />
           </div>
         )}
 
@@ -149,7 +157,7 @@ const Message: React.FC<MessageProps> = ({
         {!isTyping && (
           <>
             {isUser ? (
-              <p className="leading-relaxed whitespace-pre-wrap">{message.text}</p>
+              <p className="leading-relaxed whitespace-pre-wrap font-medium">{message.text}</p>
             ) : (
               <div className={`md ${isStreaming ? 'streaming-cursor' : ''}`}>
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
