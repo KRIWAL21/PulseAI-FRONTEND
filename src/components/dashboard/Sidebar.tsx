@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useChat } from '../../hooks/useChat';
+import UserProfileModal from './UserProfileModal';
 
 /**
  * Sidebar — Conversation history panel with full management
@@ -35,6 +36,7 @@ const Sidebar = ({ isMobileOpen, onMobileClose }: SidebarProps) => {
 
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState('');
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const renameInputRef = useRef<HTMLInputElement>(null);
 
   const handleLogout = () => signOut();
@@ -211,19 +213,24 @@ const Sidebar = ({ isMobileOpen, onMobileClose }: SidebarProps) => {
         className="px-3 py-3"
         style={{ borderTop: '1px solid var(--border)' }}
       >
-        <div className="flex items-center gap-3 px-2 py-2 rounded-xl" style={{ background: 'var(--bg-overlay)' }}>
+        <div
+          onClick={() => setIsProfileOpen(true)}
+          className="flex items-center gap-3 px-2 py-2 rounded-xl cursor-pointer transition-all hover:bg-white/[0.05] group"
+          style={{ background: 'var(--bg-overlay)', border: '1px solid transparent' }}
+          title="Click to view profile & stats"
+        >
           {/* Avatar */}
           <div
-            className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 group-hover:scale-105 transition-transform"
             style={{ background: 'var(--gradient-accent)', color: '#fff' }}
           >
             {user?.email?.charAt(0).toUpperCase() ?? '?'}
           </div>
-          <span className="text-xs truncate flex-1" style={{ color: 'var(--text-secondary)' }}>
+          <span className="text-xs truncate flex-1 group-hover:text-cyan-400 transition-colors" style={{ color: 'var(--text-secondary)' }}>
             {user?.email}
           </span>
           <button
-            onClick={handleLogout}
+            onClick={e => { e.stopPropagation(); handleLogout(); }}
             title="Sign out"
             className="p-1.5 rounded-lg transition-colors"
             style={{ color: 'var(--text-muted)' }}
@@ -237,6 +244,7 @@ const Sidebar = ({ isMobileOpen, onMobileClose }: SidebarProps) => {
           </button>
         </div>
       </div>
+      <UserProfileModal isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
     </aside>
   );
 
